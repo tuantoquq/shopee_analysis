@@ -28,5 +28,5 @@ ENV PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
 ENV APP=/app
 ENV SHARED_WORKSPACE=/opt/workspace
 RUN mkdir -p ${SHARED_WORKSPACE}
-COPY requirements.txt ${shared_workspace}
+COPY requirements.txt ${SHARED_WORKSPACE}
 VOLUME ${SHARED_WORKSPACE}

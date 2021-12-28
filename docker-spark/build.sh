@@ -2,20 +2,20 @@ SPARK_VERSION="3.0.0"
 HADOOP_VERSION="2.7"
 JUPYTERLAB_VERSION="2.1.5"
 
-# -- Building the Images
-# docker build \
-#   --build-arg spark_version="${SPARK_VERSION}" \
-#   --build-arg hadoop_version="${HADOOP_VERSION}" \
-#   -f spark-base.Dockerfile \
-#   -t tuantoquq/spark-base .
+-- Building the Images
+docker build \
+  --build-arg spark_version="${SPARK_VERSION}" \
+  --build-arg hadoop_version="${HADOOP_VERSION}" \
+  -f spark-base.Dockerfile \
+  -t tuantoquq/spark-base .
 
-# docker build \
-#   -f spark-master.Dockerfile \
-#   -t tuantoquq/spark-master .
+docker build \
+  -f spark-master.Dockerfile \
+  -t tuantoquq/spark-master .
 
-# docker build \
-#   -f spark-worker.Dockerfile \
-#   -t tuantoquq/spark-worker .
+docker build \
+  -f spark-worker.Dockerfile \
+  -t tuantoquq/spark-worker .
 
 docker build \
   --build-arg spark_version="${SPARK_VERSION}" \
