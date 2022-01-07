@@ -75,6 +75,7 @@ services:
     # ZOOKEEPER
   zookeeper:
     image: 'bitnami/zookeeper:3'
+    user: root
     container_name: zookeeper-container
     ports:
       - '2181:2181'
@@ -86,6 +87,7 @@ services:
   # KAFKA
   kafka:
     image: 'bitnami/kafka'
+    user: root
     container_name: kafka-container
     hostname: kafka
     ports:
@@ -102,34 +104,46 @@ services:
       - zookeeper
   # SPARK
   spark-master:
-    image: tuantoquq/spark-master
     container_name: spark-master
-    ports:
-      - 8080:8080
-      - 7077:7077
-    env_file:
-      - ./hadoop/hadoop.env
+    hostname: spark
+    image: bitnami/spark:3
+    user: root
     environment:
-      - PYSPARK_PYTHON=python3
-      - PYSPARK_DRIVER_PYTHON=python3
-      - INIT_DAEMON_STEP=setup_spark
+      - SPARK_MODE=master
+      - SPARK_MASTER=spark://spark-master:7077
+      - MASTER=spark://spark-master:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_MASTER_HOST=spark-master
+    ports:
+      - '8080:8080'
     networks:
       - project3-network
+    extra_hosts:
+      - 'spark-master:0.0.0.0'
   spark-worker:
-    image: tuantoquq/spark-worker
     container_name: spark-worker
+    hostname: spark
+    image: bitnami/spark:3
+    user: root
     depends_on:
       - spark-master
-    env_file:
-      - ./hadoop/hadoop.env
     environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_MASTER=spark://spark-master:7077
-      - PYSPARK_PYTHON=python3
-      - PYSPARK_DRIVER_PYTHON=python3
-      - SPARK_WORKER_CORES=4
+      - SPARK_MASTER_HOST=spark-master
+      - MASTER=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=4G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
     ports:
-      - 8081:8081
+      - '8081:8081'
     networks:
       - project3-network
   elasticsearch:
@@ -153,13 +167,6 @@ services:
       - elasticsearch
     ports:
       - 5601:5601
-  jupyterlab:
-    image: tuantoquq/jupyterlab
-    container_name: jupyterlab
-    ports:
-      - 8888:8888
-    volumes:
-      - ./spark_workspace/:/opt/workspace/
 volumes:
   hadoop_namenode:
   hadoop_datanode:
